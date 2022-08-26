@@ -10,4 +10,6 @@ fn main() {
     
     let mut chip8_memory = Memory::new();
     chip8_memory.load_program(data);
+
+    println!("{:x?}", chip8_memory);
 }
