@@ -42,4 +42,8 @@ impl Memory {
             self.ram[index + 512] = *byte;
         }
     }
+
+    pub fn read(&mut self, index: usize) -> u8{
+        self.ram[index]
+    }
 }
