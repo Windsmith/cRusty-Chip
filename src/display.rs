@@ -33,10 +33,6 @@ impl Display {
 
     pub fn flip_pixel(&mut self, mut x: usize, mut y: usize) -> bool
     {
-
-        if x > 63 {x %= 64}
-        if y > 31 {y %= 32}
-
         let mut collided = false;
         self.frame_pos[x][y] ^= 1;
     

@@ -1,3 +1,5 @@
+use std::{thread::sleep, time::Duration};
+
 use crate::{memory::Memory, display::Display};
 
 pub struct Cpu {
@@ -43,7 +45,7 @@ impl Cpu {
                     self.pc += 2;
                 }
                 // Jump to location nnn
-                19 => {
+                1 => {
                     self.pc = nnn;
                 }
                 // Set Vx = kk.
@@ -67,8 +69,8 @@ impl Cpu {
                 //Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
                 0xD => {
                     println!("D");
-                    let x_pos = self.vx[x as usize];
-                    let y_pos = self.vx[y as usize];
+                    let x_pos = self.vx[x as usize] % 64;
+                    let y_pos = self.vx[y as usize] % 32;
                     let mut sprite: Vec<u8> = Vec::new();
                     for index in 0..n {
                         sprite.push(memory.read((self.i + index as u16).into()))
@@ -76,12 +78,16 @@ impl Cpu {
                     let collision = display.draw_sprite(&sprite, x_pos, y_pos);
 
                     if collision {self.vx[0xF] = 1}
-                    else {self.vx[0xF] = 1}
+                    else {self.vx[0xF] = 0}
 
                     self.pc += 2;
+                    display.render();
                 }
                 _ => break // CHANGE LATER
             }
+
+            sleep(Duration::from_secs_f32(0.00142857)); // 700 instructions per second
         }
+        
     }
 }
