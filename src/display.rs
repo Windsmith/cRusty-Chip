@@ -11,10 +11,9 @@ pub struct Display {
 }
 
 impl Display {
-    pub fn new() -> Self {
+    pub fn new(sdl_context: &Sdl) -> Self {
         let scale: usize = 15;
 
-        let sdl_context = sdl2::init().unwrap();
         let video = sdl_context.video().unwrap();
         let window = video.window("test", 64*scale as u32, 32*scale as u32).position_centered().build().unwrap();
 
@@ -68,6 +67,7 @@ impl Display {
 
     pub fn clear(&mut self) {
         self.canvas.set_draw_color(Color::RGB(0, 0, 0));
+        self.frame_pos = [[0; 32];64];
         self.canvas.clear();
     }
 }

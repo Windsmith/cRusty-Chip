@@ -46,4 +46,8 @@ impl Memory {
     pub fn read(&mut self, index: usize) -> u8{
         self.ram[index]
     }
+
+    pub fn write_to_ram(&mut self, index: usize, data: u8) {
+        self.ram[index] = data;
+    }
 }
