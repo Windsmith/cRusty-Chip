@@ -20,6 +20,7 @@ fn main() {
     let data: Vec<u8> = fs::read("./programs/snake.ch8").unwrap();
     
     let sdl_context = sdl2::init().unwrap();
+    let mut event_pump = sdl_context.event_pump().unwrap();
 
     let mut chip8_memory = Memory::new();
     chip8_memory.load_program(data);
@@ -28,5 +29,5 @@ fn main() {
 
     let mut chip8_cpu = Cpu::new();
 
-    chip8_cpu.run_program(&mut chip8_memory, &mut chip8_display, &sdl_context);
+    chip8_cpu.run_program(&mut chip8_memory, &mut chip8_display, &mut event_pump);
 }

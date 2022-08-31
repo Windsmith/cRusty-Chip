@@ -1,7 +1,7 @@
 use std::{thread::sleep, time::Duration};
 
 use rand::Rng;
-use sdl2::{event::Event, keyboard::Scancode, Sdl};
+use sdl2::{event::Event, keyboard::Scancode, Sdl, EventPump};
 
 use crate::{memory::Memory, display::Display, keypad::Keypad, opcodes};
 
@@ -28,8 +28,7 @@ impl Cpu {
         }
     }
 
-    pub fn run_program(&mut self, memory: &mut Memory, display: &mut Display, sdl_context: &Sdl) {
-        let mut event_pump = sdl_context.event_pump().unwrap();
+    pub fn run_program(&mut self, memory: &mut Memory, display: &mut Display, event_pump: &mut EventPump) {
         let mut keypad = Keypad::new();
 
         loop {
@@ -42,34 +41,8 @@ impl Cpu {
             let y = lo >> 4; // third nibble of instruction
             let n = lo & 0x0F; // fourth nibble of instruction
             let nnn = (instruction << 4) >> 4; // second-third-fourth nibbles
-        
-            loop {
-                match event_pump.poll_event() {
-                    Some(Event::KeyDown {timestamp, window_id, keycode, scancode, keymod, repeat }) => {
-                        match scancode {
-                            Some(Scancode::Num1) => {keypad.key_down(1)}
-                            Some(Scancode::Num2) => {keypad.key_down(2)}
-                            Some(Scancode::Num3) => {keypad.key_down(3)}
-                            Some(Scancode::Num4) => {keypad.key_down(0xC)}
-                            Some(Scancode::Q) => {keypad.key_down(4)}
-                            Some(Scancode::W) => {keypad.key_down(5)}
-                            Some(Scancode::E) => {keypad.key_down(6)}
-                            Some(Scancode::R) => {keypad.key_down(0xD)}
-                            Some(Scancode::A) => {keypad.key_down(7)}
-                            Some(Scancode::S) => {keypad.key_down(8)}
-                            Some(Scancode::D) => {keypad.key_down(9)}
-                            Some(Scancode::F) => {keypad.key_down(0xE)}
-                            Some(Scancode::Z) => {keypad.key_down(0xA)}
-                            Some(Scancode::X) => {keypad.key_down(0)}
-                            Some(Scancode::C) => {keypad.key_down(0xB)}
-                            Some(Scancode::V) => {keypad.key_down(0xF)}
-                            _ => {}
-                        }
-                    }
-                    None => break,
-                    _ => {}
-                }
-            }
+
+            keypad.register_key_downs(event_pump);
 
             match k {
                 0 => opcodes::opcode0(self, display, n),
@@ -87,7 +60,7 @@ impl Cpu {
                 0xC => opcodes::opcodeC(self, x, lo),
                 0xD => opcodes::opcodeD(self, display, memory, n, x, y),
                 0xE => opcodes::opcodeE(self, &mut keypad, n, x),
-                0xF => opcodes::opcodeF(self, memory, &mut event_pump, x, lo),
+                0xF => opcodes::opcodeF(self, memory, event_pump, x, lo),
                 _ => ()
             }
 
