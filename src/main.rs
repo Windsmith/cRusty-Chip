@@ -3,7 +3,7 @@ mod display;
 mod cpu;
 mod utils;
 mod keypad;
-
+mod opcodes;
 use std::fs;
 use std::path::Path;
 
@@ -17,7 +17,7 @@ use sdl2::rect::Point;
 use utils::get_bits;
 
 fn main() {
-    let data: Vec<u8> = fs::read("./programs/RPS.ch8").unwrap();
+    let data: Vec<u8> = fs::read("./programs/snake.ch8").unwrap();
     
     let sdl_context = sdl2::init().unwrap();
 
