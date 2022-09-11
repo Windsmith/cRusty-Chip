@@ -1,3 +1,5 @@
+use std::process;
+
 use rand::Rng;
 use sdl2::{event::Event, keyboard::Scancode, EventPump};
 
@@ -257,6 +259,8 @@ pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, event_pump: &mut EventPump, x
                             Some(Scancode::X) => 0,
                             Some(Scancode::C) => 0xB,
                             Some(Scancode::V) => 0xF,
+                            // Quit program
+                            Some(Scancode::Escape) => {process::exit(0)}
                             _ => { 
                                 key_pressed = false;
                                 0

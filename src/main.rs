@@ -17,7 +17,7 @@ use sdl2::rect::Point;
 use utils::get_bits;
 
 fn main() {
-    let data: Vec<u8> = fs::read("./programs/snake.ch8").unwrap();
+    let data: Vec<u8> = fs::read("./programs/glitchGhost.ch8").unwrap();
     
     let sdl_context = sdl2::init().unwrap();
     let mut event_pump = sdl_context.event_pump().unwrap();

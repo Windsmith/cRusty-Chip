@@ -31,6 +31,8 @@ impl Cpu {
     pub fn run_program(&mut self, memory: &mut Memory, display: &mut Display, event_pump: &mut EventPump) {
         let mut keypad = Keypad::new();
 
+        let mut delay_counter = 0;
+
         loop {
             let hi = memory.read(self.pc.into()); // first byte of instruction
             let lo = memory.read((self.pc + 1).into()); // second byte of instruction (nn)
@@ -64,17 +66,21 @@ impl Cpu {
                 _ => ()
             }
 
-            //sleep(Duration::from_secs_f32(1.0));
-            sleep(Duration::from_secs_f32(0.00142857)); // 700 instructions per second
+            //delay decrement 60 times in a second
+            if self.delay > 0 {
+                delay_counter += 1; 
+            }
 
-            let mut delay_counter = 0;
-            delay_counter += 1; 
             if delay_counter == 12 {
                 self.delay -= 1;
                 delay_counter = 0;
             }
 
-            keypad.reset() 
+            keypad.reset();
+
+            //sleep(Duration::from_secs_f32(1.0));
+            sleep(Duration::from_secs_f32(0.00142857)); // 700 instructions per second
+
         }
         
     }

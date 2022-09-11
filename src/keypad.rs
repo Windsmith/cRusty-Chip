@@ -50,6 +50,7 @@ impl Keypad {
                         Some(Scancode::X) => {self.key_down(0)}
                         Some(Scancode::C) => {self.key_down(0xB)}
                         Some(Scancode::V) => {self.key_down(0xF)}
+                        //Quit program
                         Some(Scancode::Escape) => {process::exit(0)}
                         _ => {}
                     }
