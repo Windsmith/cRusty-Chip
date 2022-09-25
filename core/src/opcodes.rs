@@ -3,7 +3,7 @@ use std::process;
 use rand::Rng;
 use sdl2::{event::Event, keyboard::Scancode, EventPump};
 
-use crate::{cpu::Cpu, display::Display, memory::Memory, keypad::Keypad};
+use crate::{cpu::Cpu, display::Display, memory::Memory};
 
 pub fn opcode0(cpu: &mut Cpu, display: &mut Display, n: u8) {
     match n {
@@ -204,21 +204,20 @@ pub fn opcodeD(cpu: &mut Cpu, display: &mut Display, memory: &mut Memory, n: u8,
     else {cpu.vx[0xF] = 0}
 
     cpu.pc += 2;
-    display.render();
 }
 
-pub fn opcodeE(cpu: &mut Cpu, keypad: &mut Keypad, n: u8, x: u8) {
+pub fn opcodeE(cpu: &mut Cpu, n: u8, x: u8) {
     match n {
         // Skip next instruction if key with the value of Vx is pressed.
         0xE => {
             println!("EE");
-            if keypad.is_key_down(cpu.vx[x as usize] as usize) {cpu.pc += 2}
+            if cpu.keys[cpu.vx[x as usize] as usize] {cpu.pc += 2}
             cpu.pc += 2;
         }
         // Skip next instruction if key with the value of Vx is not pressed.
         0x1 => {
             println!("E1");
-            if keypad.is_key_up(cpu.vx[x as usize] as usize) {cpu.pc += 2}
+            if !cpu.keys[cpu.vx[x as usize] as usize] {cpu.pc += 2}
             cpu.pc += 2;
         }
         _ => {}
