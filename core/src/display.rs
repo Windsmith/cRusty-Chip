@@ -7,8 +7,7 @@ pub struct Display {
 }
 
 impl Display {
-    pub fn new(sdl_context: &Sdl) -> Self {
-
+    pub fn new() -> Self {
         Display {
             frame_pos: [[0; 32];64],
         }
@@ -31,7 +30,9 @@ impl Display {
         for (y_index, byte) in sprite.iter().enumerate() {
             for (x_index, bit) in get_bits(*byte).iter().enumerate() {
                 if *bit {
-                    let collision_check = &self.flip_pixel((x + x_index as u8).into(), (y + y_index as u8).into());
+                    let x_pos = (x + x_index as u8) % 64;
+                    let y_pos = (y + y_index as u8) % 32;
+                    let collision_check = &self.flip_pixel((x_pos as u8).into(), (y_pos as u8).into());
 
                     if collided == false && *collision_check == true {collided = true;}
                 }
@@ -42,5 +43,9 @@ impl Display {
 
     pub fn clear(&mut self) {
         self.frame_pos = [[0; 32];64];
+    }
+
+    pub fn get_frame(&mut self) -> [[u8; 32];64] {
+        self.frame_pos
     }
 }

@@ -30,7 +30,7 @@ impl Cpu {
         }
     }
 
-    pub fn tick(&mut self, memory: &mut Memory, display: &mut Display, event_pump: &mut EventPump) {        
+    pub fn tick(&mut self, memory: &mut Memory, display: &mut Display) {        
 
         let hi = memory.read(self.pc.into()); // first byte of instruction
         let lo = memory.read((self.pc + 1).into()); // second byte of instruction (nn)
@@ -58,7 +58,7 @@ impl Cpu {
             0xC => opcodes::opcodeC(self, x, lo),
             0xD => opcodes::opcodeD(self, display, memory, n, x, y),
             0xE => opcodes::opcodeE(self, n, x),
-            0xF => opcodes::opcodeF(self, memory, event_pump, x, lo),
+            0xF => opcodes::opcodeF(self, memory, x, lo),
             _ => ()
         }
     }

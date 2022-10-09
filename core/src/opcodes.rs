@@ -84,13 +84,13 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
         // Set Vx = Vx OR Vy.
         1 => {
             println!("81");
-            cpu.vx[x as usize] = cpu.vx[x as usize] | cpu.vx[y as usize];
+            cpu.vx[x as usize] |= cpu.vx[y as usize];
             cpu.pc += 2;
         }
         // Set Vx = Vx AND Vy.
         2 => {
             println!("82");
-            cpu.vx[x as usize] = cpu.vx[x as usize] & cpu.vx[y as usize];
+            cpu.vx[x as usize] &= cpu.vx[y as usize];
             cpu.pc += 2;
         }
         // Set Vx = Vx XOR Vy.
@@ -117,8 +117,8 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
             let one = cpu.vx[x as usize];
             let two = cpu.vx[y as usize];
 
-            if one > two {cpu.vx[0xF] = 1}
-            else {cpu.vx[0xF] = 0}
+            if one < two {cpu.vx[0xF] = 0}
+            else {cpu.vx[0xF] = 1}
 
             cpu.vx[x as usize] = one.wrapping_sub(two); // MAYBE NOT WRAPPING SUB
             cpu.pc += 2;
@@ -184,7 +184,7 @@ pub fn opcodeB(cpu: &mut Cpu, nnn: u16) {
 pub fn opcodeC(cpu: &mut Cpu, x:u8, lo:u8) {
     // Set Vx = random byte AND kk.
     println!("C");
-    let random_num: u8 = rand::thread_rng().gen();
+    let random_num: u8 = rand::random();
     cpu.vx[x as usize] = random_num & lo;
     cpu.pc += 2;
 }
@@ -224,7 +224,7 @@ pub fn opcodeE(cpu: &mut Cpu, n: u8, x: u8) {
     }
 }
 
-pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, event_pump: &mut EventPump, x:u8, lo: u8) {
+pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, x:u8, lo: u8) {
     match lo {
         // Set Vx = delay timer value.
         0x07 => {
@@ -235,43 +235,13 @@ pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, event_pump: &mut EventPump, x
         // Wait for a key press, store the value of the key in Vx.
         0x0A => {
             println!("F0A");
-            let mut key_pressed = false;
-            let mut key: u8 = 0;
-            while !key_pressed {
-                match event_pump.wait_event() {
-                    Event::KeyDown {timestamp, window_id, keycode, scancode, keymod, repeat } => {
-                        key_pressed = true;
-                        key = match scancode {
-                            Some(Scancode::Num1) => 1,
-                            Some(Scancode::Num2) => 2,
-                            Some(Scancode::Num3) => 3,
-                            Some(Scancode::Num4) => 0xC,
-                            Some(Scancode::Q) => 4,
-                            Some(Scancode::W) => 5,
-                            Some(Scancode::E) => 6,
-                            Some(Scancode::R) => 0xD, 
-                            Some(Scancode::A) => 7,
-                            Some(Scancode::S) => 8,
-                            Some(Scancode::D) => 9,
-                            Some(Scancode::F) => 0xE,
-                            Some(Scancode::Z) => 0xA,
-                            Some(Scancode::X) => 0,
-                            Some(Scancode::C) => 0xB,
-                            Some(Scancode::V) => 0xF,
-                            // Quit program
-                            Some(Scancode::Escape) => {process::exit(0)}
-                            _ => { 
-                                key_pressed = false;
-                                0
-                            }
-                        }
-                    }
-                    _ => {}
+            for i in 0..cpu.keys.len() {
+                if cpu.keys[i] {
+                    cpu.vx[x as usize] = i as u8;
+                    cpu.pc += 2;
+                    break;
                 }
             }
-
-            cpu.vx[x as usize] = key;
-            cpu.pc += 2;
         }
         // Set delay timer = Vx.
         0x15 => {
