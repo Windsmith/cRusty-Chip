@@ -1,9 +1,4 @@
-use std::{thread::sleep, time::Duration};
-
-use rand::Rng;
-use sdl2::{event::Event, keyboard::Scancode, Sdl, EventPump};
-
-use crate::{memory::Memory, display::Display, opcodes};
+use crate::{display::Display, memory::Memory, opcodes};
 
 pub struct Cpu {
     pub vx: [u8; 16],
@@ -13,11 +8,11 @@ pub struct Cpu {
     pub pc: u16,
     pub sp: u8,
     pub stack: [u16; 16],
-    pub keys: [bool; 16]
+    pub keys: [bool; 16],
 }
 
 impl Cpu {
-    pub fn new() -> Self{
+    pub fn new() -> Self {
         Cpu {
             vx: [0; 16],
             i: 0,
@@ -26,12 +21,11 @@ impl Cpu {
             pc: 512,
             sp: 0,
             stack: [0; 16],
-            keys: [false; 16]
+            keys: [false; 16],
         }
     }
 
-    pub fn tick(&mut self, memory: &mut Memory, display: &mut Display) {        
-
+    pub fn tick(&mut self, memory: &mut Memory, display: &mut Display) {
         let hi = memory.read(self.pc.into()); // first byte of instruction
         let lo = memory.read((self.pc + 1).into()); // second byte of instruction (nn)
         let instruction: u16 = (((hi as u16) << 8) | lo as u16).into();
@@ -59,11 +53,13 @@ impl Cpu {
             0xD => opcodes::opcodeD(self, display, memory, n, x, y),
             0xE => opcodes::opcodeE(self, n, x),
             0xF => opcodes::opcodeF(self, memory, x, lo),
-            _ => ()
+            _ => (),
         }
     }
 
     pub fn tick_timers(&mut self) {
-        if self.delay > 0 {self.delay -= 1}
+        if self.delay > 0 {
+            self.delay -= 1
+        }
     }
 }

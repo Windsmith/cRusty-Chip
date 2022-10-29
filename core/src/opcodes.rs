@@ -1,8 +1,3 @@
-use std::process;
-
-use rand::Rng;
-use sdl2::{event::Event, keyboard::Scancode, EventPump};
-
 use crate::{cpu::Cpu, display::Display, memory::Memory};
 
 pub fn opcode0(cpu: &mut Cpu, display: &mut Display, n: u8) {
@@ -20,7 +15,7 @@ pub fn opcode0(cpu: &mut Cpu, display: &mut Display, n: u8) {
             cpu.pc = cpu.stack[cpu.sp as usize];
             cpu.pc += 2;
         }
-        _ => ()
+        _ => (),
     }
 }
 
@@ -41,21 +36,27 @@ pub fn opcode2(cpu: &mut Cpu, nnn: u16) {
 pub fn opcode3(cpu: &mut Cpu, x: u8, lo: u8) {
     // Skip next instruction if Vx = kk.
     println!("3");
-    if cpu.vx[x as usize] == lo { cpu.pc += 2; }
+    if cpu.vx[x as usize] == lo {
+        cpu.pc += 2;
+    }
     cpu.pc += 2;
 }
 
 pub fn opcode4(cpu: &mut Cpu, x: u8, lo: u8) {
     // Skip next instruction if Vx != kk.
     println!("4");
-    if cpu.vx[x as usize] != lo { cpu.pc += 2; }
+    if cpu.vx[x as usize] != lo {
+        cpu.pc += 2;
+    }
     cpu.pc += 2;
 }
 
-pub fn opcode5(cpu: &mut Cpu, x: u8, y:u8) {
+pub fn opcode5(cpu: &mut Cpu, x: u8, y: u8) {
     // Skip next instruction if Vx = Vy.
     println!("5");
-    if cpu.vx[x as usize] == cpu.vx[y as usize] { cpu.pc += 2; }
+    if cpu.vx[x as usize] == cpu.vx[y as usize] {
+        cpu.pc += 2;
+    }
     cpu.pc += 2;
 }
 
@@ -73,7 +74,7 @@ pub fn opcode7(cpu: &mut Cpu, x: u8, lo: u8) {
     cpu.pc += 2;
 }
 
-pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
+pub fn opcode8(cpu: &mut Cpu, n: u8, x: u8, y: u8) {
     match n {
         // Set Vx = Vy.
         0 => {
@@ -105,8 +106,11 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
             let one = cpu.vx[x as usize];
             let two = cpu.vx[y as usize];
 
-            if (one as u16 + two as u16) > u8::MAX as u16 {cpu.vx[0xF] = 1}
-            else {cpu.vx[0xF] = 0}
+            if (one as u16 + two as u16) > u8::MAX as u16 {
+                cpu.vx[0xF] = 1
+            } else {
+                cpu.vx[0xF] = 0
+            }
 
             cpu.vx[x as usize] = one.wrapping_add(two); // MAYBE NOT WRAPPING ADD
             cpu.pc += 2
@@ -117,8 +121,11 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
             let one = cpu.vx[x as usize];
             let two = cpu.vx[y as usize];
 
-            if one < two {cpu.vx[0xF] = 0}
-            else {cpu.vx[0xF] = 1}
+            if one < two {
+                cpu.vx[0xF] = 0
+            } else {
+                cpu.vx[0xF] = 1
+            }
 
             cpu.vx[x as usize] = one.wrapping_sub(two); // MAYBE NOT WRAPPING SUB
             cpu.pc += 2;
@@ -128,8 +135,11 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
             println!("86");
             let one = cpu.vx[x as usize];
 
-            if (one << 7) >> 7 == 1 {cpu.vx[0xF] = 1} 
-            else {cpu.vx[0xF] = 0}
+            if (one << 7) >> 7 == 1 {
+                cpu.vx[0xF] = 1
+            } else {
+                cpu.vx[0xF] = 0
+            }
 
             cpu.vx[x as usize] = cpu.vx[x as usize] >> 1;
             cpu.pc += 2
@@ -140,8 +150,11 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
             let one = cpu.vx[x as usize];
             let two = cpu.vx[y as usize];
 
-            if two > one {cpu.vx[0xF] = 1}
-            else {cpu.vx[0xF] = 0}
+            if two > one {
+                cpu.vx[0xF] = 1
+            } else {
+                cpu.vx[0xF] = 0
+            }
 
             cpu.vx[x as usize] = two.wrapping_sub(one); // MAYBE NOT WRAPPING SUB
             cpu.pc += 2
@@ -151,20 +164,25 @@ pub fn opcode8(cpu: &mut Cpu, n:u8, x: u8, y: u8) {
             println!("8E");
             let one = cpu.vx[x as usize];
 
-            if one >> 7 == 1 {cpu.vx[0xF] = 1} 
-            else {cpu.vx[0xF] = 0}
+            if one >> 7 == 1 {
+                cpu.vx[0xF] = 1
+            } else {
+                cpu.vx[0xF] = 0
+            }
 
             cpu.vx[x as usize] = cpu.vx[x as usize] << 1;
             cpu.pc += 2
         }
-        _ => ()
+        _ => (),
     }
 }
 
-pub fn opcode9(cpu: &mut Cpu, x: u8, y:u8) {
+pub fn opcode9(cpu: &mut Cpu, x: u8, y: u8) {
     // Skip next instruction if Vx != Vy.
     println!("9");
-    if cpu.vx[x as usize] != cpu.vx[y as usize] { cpu.pc += 2; }
+    if cpu.vx[x as usize] != cpu.vx[y as usize] {
+        cpu.pc += 2;
+    }
     cpu.pc += 2;
 }
 
@@ -181,7 +199,7 @@ pub fn opcodeB(cpu: &mut Cpu, nnn: u16) {
     cpu.pc = cpu.vx[0] as u16 + nnn;
 }
 
-pub fn opcodeC(cpu: &mut Cpu, x:u8, lo:u8) {
+pub fn opcodeC(cpu: &mut Cpu, x: u8, lo: u8) {
     // Set Vx = random byte AND kk.
     println!("C");
     let random_num: u8 = rand::random();
@@ -200,8 +218,11 @@ pub fn opcodeD(cpu: &mut Cpu, display: &mut Display, memory: &mut Memory, n: u8,
     }
     let collision = display.draw_sprite(&sprite, x_pos, y_pos);
 
-    if collision {cpu.vx[0xF] = 1}
-    else {cpu.vx[0xF] = 0}
+    if collision {
+        cpu.vx[0xF] = 1
+    } else {
+        cpu.vx[0xF] = 0
+    }
 
     cpu.pc += 2;
 }
@@ -211,20 +232,24 @@ pub fn opcodeE(cpu: &mut Cpu, n: u8, x: u8) {
         // Skip next instruction if key with the value of Vx is pressed.
         0xE => {
             println!("EE");
-            if cpu.keys[cpu.vx[x as usize] as usize] {cpu.pc += 2}
+            if cpu.keys[cpu.vx[x as usize] as usize] {
+                cpu.pc += 2
+            }
             cpu.pc += 2;
         }
         // Skip next instruction if key with the value of Vx is not pressed.
         0x1 => {
             println!("E1");
-            if !cpu.keys[cpu.vx[x as usize] as usize] {cpu.pc += 2}
+            if !cpu.keys[cpu.vx[x as usize] as usize] {
+                cpu.pc += 2
+            }
             cpu.pc += 2;
         }
         _ => {}
     }
 }
 
-pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, x:u8, lo: u8) {
+pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, x: u8, lo: u8) {
     match lo {
         // Set Vx = delay timer value.
         0x07 => {
@@ -271,7 +296,13 @@ pub fn opcodeF(cpu: &mut Cpu, memory: &mut Memory, x:u8, lo: u8) {
         0x33 => {
             println!("F33");
             let num = cpu.vx[x as usize];
-            println!("{} {} {} {}", num, num / 100, (num % 100) / 10, (num % 100) % 10);
+            println!(
+                "{} {} {} {}",
+                num,
+                num / 100,
+                (num % 100) / 10,
+                (num % 100) % 10
+            );
             memory.write_to_ram(cpu.i.into(), num / 100);
             memory.write_to_ram((cpu.i + 1).into(), (num % 100) / 10);
             memory.write_to_ram((cpu.i + 2).into(), (num % 100) % 10);
