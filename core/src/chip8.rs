@@ -23,6 +23,10 @@ impl Chip8 {
         self.memory.load_program(data);
     }
 
+    pub fn load_program_to_memory(&mut self, game: Vec<u8>) {
+        self.memory.load_program(game)
+    }
+
     pub fn tick(&mut self) {
         self.cpu.tick(&mut self.memory, &mut self.display)
     }
@@ -41,5 +45,11 @@ impl Chip8 {
 
     pub fn get_display(&mut self) -> [[u8; 32]; 64] {
         self.display.get_frame()
+    }
+
+    pub fn reset(&mut self) {
+        self.cpu.reset();
+        self.display.clear();
+        self.memory.reset();
     }
 }

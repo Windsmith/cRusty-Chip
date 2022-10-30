@@ -1,11 +1,11 @@
 #[derive(Debug)]
 pub struct Memory {
-    ram: [u8; 4096]
+    ram: [u8; 4096],
 }
 
 impl Memory {
     pub fn new() -> Memory {
-        let mut memory = Memory {ram: [0; 4096] };
+        let mut memory = Memory { ram: [0; 4096] };
 
         let sprites: [[u8; 5]; 16] = [
             [0xF0, 0x90, 0x90, 0x90, 0xF0], // 0
@@ -19,22 +19,22 @@ impl Memory {
             [0xF0, 0x90, 0xF0, 0x90, 0xF0], // 8
             [0xF0, 0x90, 0xF0, 0x10, 0xF0], // 9
             [0xF0, 0x90, 0xF0, 0x90, 0x90], // A
-            [0xE0, 0x90, 0xE0, 0x90, 0xE0], // B 
+            [0xE0, 0x90, 0xE0, 0x90, 0xE0], // B
             [0xF0, 0x80, 0x80, 0x80, 0xF0], // C
             [0xE0, 0x90, 0x90, 0x90, 0xE0], // D
             [0xF0, 0x80, 0xF0, 0x80, 0xF0], // E
             [0xF0, 0x80, 0xF0, 0x80, 0x80], // F
-            ];
+        ];
 
-            let mut index = 0;
-            for sprite in sprites {
-                for byte in sprite {
-                    memory.ram[index] = byte;
-                    index += 1;
-                }
+        let mut index = 0;
+        for sprite in sprites {
+            for byte in sprite {
+                memory.ram[index] = byte;
+                index += 1;
             }
+        }
 
-            memory
+        memory
     }
 
     pub fn load_program(&mut self, program: Vec<u8>) {
@@ -43,11 +43,15 @@ impl Memory {
         }
     }
 
-    pub fn read(&mut self, index: usize) -> u8{
+    pub fn read(&mut self, index: usize) -> u8 {
         self.ram[index]
     }
 
     pub fn write_to_ram(&mut self, index: usize, data: u8) {
         self.ram[index] = data;
+    }
+
+    pub fn reset(&mut self) {
+        self.ram = [0; 4096];
     }
 }

@@ -62,4 +62,15 @@ impl Cpu {
             self.delay -= 1
         }
     }
+
+    pub fn reset(&mut self) {
+        self.vx = [0; 16];
+        self.i = 0;
+        self.delay = 0;
+        self.sound = 0;
+        self.pc = 512;
+        self.sp = 0;
+        self.stack = [0; 16];
+        self.keys = [false; 16];
+    }
 }
